@@ -32,7 +32,7 @@
 
             let new_point;
 
-            axios.get('/json').then(function (response) {
+            axios.get('/json?date=2019-01-02T00:00:00.000Z').then(function (response) {
                 console.log(response);
                 new_point = response.data;
                 L.geoJSON(new_point).bindPopup(function (layer) {
