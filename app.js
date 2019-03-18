@@ -13,7 +13,7 @@ const earthquakes = (start, end, callback) =>{
         } else if (response.body.features === undefined){
             callback('Unable to find earthquake data', undefined)
         } else {
-            callback(undefined, response.body.features[0])
+            callback(undefined, response.body.features)
         }
     })
 }
