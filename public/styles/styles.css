@@ -11,3 +11,18 @@ img {
     height: 600px;
     width: 80%; 
 }
+
+#datepicker {
+    position: fixed;
+    top: 5%;
+    left: 70%;
+    height: 15px;
+    width: 100px;   
+}
+
+#dateHeader {
+    position: fixed;
+    top: 5%;
+    left: 64%;
+    font-family: Impact, Charcoal, sans-serif;   
+}

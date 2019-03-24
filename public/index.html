@@ -2,51 +2,60 @@
 
 <html>
 
-    <head>
-        <link rel="stylesheet" href="/styles/styles.css">
-        <link rel="stylesheet" href="https://unpkg.com/leaflet@1.4.0/dist/leaflet.css"
-            integrity="sha512-puBpdR0798OZvTTbP4A8Ix/l+A4dHDD0DGqYW6RQ+9jxkRFclaxxQb/SJAWZfWAkuyeQUytO7+7N4QKrDh+drA=="
-            crossorigin="" />
-        <script src="https://unpkg.com/leaflet@1.4.0/dist/leaflet.js"
-            integrity="sha512-QVftwZFqvtRNi0ZyCtsznlKSWOStnDORoefr1enyq5mVL4tmKB3S/EnC3rRJcxCPavG10IcrVGSmPh6Qw5lwrg=="
-            crossorigin=""></script>
-        <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
-    </head>
+<head>
+    <link rel="stylesheet" href="/styles/styles.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.4.0/dist/leaflet.css"
+        integrity="sha512-puBpdR0798OZvTTbP4A8Ix/l+A4dHDD0DGqYW6RQ+9jxkRFclaxxQb/SJAWZfWAkuyeQUytO7+7N4QKrDh+drA=="
+        crossorigin="" />
+    <link rel="stylesheet" href="https://unpkg.com/js-datepicker/dist/datepicker.min.css">
+    <script src="https://unpkg.com/leaflet@1.4.0/dist/leaflet.js"
+        integrity="sha512-QVftwZFqvtRNi0ZyCtsznlKSWOStnDORoefr1enyq5mVL4tmKB3S/EnC3rRJcxCPavG10IcrVGSmPh6Qw5lwrg=="
+        crossorigin=""></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <script src="https://unpkg.com/js-datepicker@4.0.10/dist/datepicker.min.js"></script>
+</head>
 
-    <body>
-        <h1>Hopefully a web map</h1>
-        <div id="mapid"></div>
+<body>
+    <h1>An EarthQuake Map</h1>
+    <div id="dateHeader">Pick a date :</div>
+    <input id="datepicker" type="text"></input>
+    <div id='mapid'></div>
 
+    <script>
+        var mymap = L.map('mapid').setView([10, 10], 2);
 
-        <script>
-
-            var mymap = L.map('mapid').setView([10, 10], 2);
-
-            L.tileLayer(
-                'https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoicGF2bGV4IiwiYSI6ImNqdDFzZ21jMjFicnUzeXBpdWdhN2kxcWsifQ.zKtSyBPurpgdRpVR1HK7mQ', 
-                {
+        L.tileLayer(
+            'https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoicGF2bGV4IiwiYSI6ImNqdDFzZ21jMjFicnUzeXBpdWdhN2kxcWsifQ.zKtSyBPurpgdRpVR1HK7mQ',
+            {
                 attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
                 maxZoom: 18,
                 id: 'mapbox.streets',
             }).addTo(mymap);
 
-            let new_point;
+        let selectedDate;
+        const picker = datepicker('#datepicker', {
+            onSelect: (instance, date) => {
+                selectedDate = date
+                var selectedDateToString = selectedDate.toISOString()
+                let new_point;
+                axios.get(`/json?date=${selectedDateToString}`).then(function (response) {
+                    console.log(response);
+                    new_point = response.data;
+                    L.geoJSON(new_point).bindPopup(function (layer) {
+                        return `${layer.feature.properties.title} <br> <a href="${layer.feature.properties.url}">details</a>`;
+                    }).addTo(mymap);
+                }).catch(function (error) {
+                    console.log(error);
+                });
+            }
+        });
 
-            axios.get('/json?date=2019-01-02T00:00:00.000Z').then(function (response) {
-                console.log(response);
-                new_point = response.data;
-                L.geoJSON(new_point).bindPopup(function (layer) {
-                    return `${layer.feature.properties.title} <br> <a href="${layer.feature.properties.url}">link</a>`;
-                }).addTo(mymap);
-            }).catch(function (error) {
-                console.log(error);
-            });
 
 
-           
 
-        </script>
 
-    </body>
+    </script>
+
+</body>
 
 </html>
