@@ -33,26 +33,27 @@
             }).addTo(mymap);
 
         let selectedDate;
+        let new_point;
+        let layer;
         const picker = datepicker('#datepicker', {
             onSelect: (instance, date) => {
                 selectedDate = date
                 var selectedDateToString = selectedDate.toISOString()
-                let new_point;
+                if (layer != undefined) {
+                    layer.remove();
+                }
                 axios.get(`/json?date=${selectedDateToString}`).then(function (response) {
                     console.log(response);
                     new_point = response.data;
-                    L.geoJSON(new_point).bindPopup(function (layer) {
+                    layer = L.geoJSON(new_point).bindPopup(function (layer) {
                         return `${layer.feature.properties.title} <br> <a href="${layer.feature.properties.url}">details</a>`;
                     }).addTo(mymap);
                 }).catch(function (error) {
                     console.log(error);
                 });
+
             }
         });
-
-
-
-
 
     </script>
 
